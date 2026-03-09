@@ -9,13 +9,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 오버레이용 배경 - 브라우저 테스트용 검정, OBS에서는 투명 처리됨 */
+/* 오버레이용 배경 - 투명 (OBS 브라우저 소스용) */
 body.overlay-mode {
-  background: #000000 !important;
+  background: transparent !important;
 }
 
 body.overlay-mode #root {
-  background: #000000 !important;
+  background: transparent !important;
 }
 
 /* 관리자 페이지용 다크 테마 */
