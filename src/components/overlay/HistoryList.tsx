@@ -1,18 +1,18 @@
 import type { Song, OverlayTheme, OverlayLayout } from '../../types';
 
-interface PlaylistListProps {
+interface HistoryListProps {
   songs: Song[];
   theme: OverlayTheme;
   layout: OverlayLayout;
 }
 
-export function PlaylistList({ songs, theme, layout }: PlaylistListProps) {
+export function HistoryList({ songs, theme, layout }: HistoryListProps) {
   if (songs.length === 0) {
     return null;
   }
 
   // 최대 표시 개수만큼만 보여줌
-  const displaySongs = songs.slice(0, layout.maxPlaylistItems);
+  const displaySongs = songs.slice(0, layout.maxHistoryItems);
 
   return (
     <div
@@ -55,7 +55,7 @@ export function PlaylistList({ songs, theme, layout }: PlaylistListProps) {
       </ul>
 
       {/* 더 많은 곡이 있음을 표시 */}
-      {songs.length > layout.maxPlaylistItems && (
+      {songs.length > layout.maxHistoryItems && (
         <div
           className="text-shadow-sm mt-1 opacity-40"
           style={{
@@ -63,7 +63,7 @@ export function PlaylistList({ songs, theme, layout }: PlaylistListProps) {
             fontSize: `${theme.fontSize.history * 0.8}px`,
           }}
         >
-          +{songs.length - layout.maxPlaylistItems} more
+          +{songs.length - layout.maxHistoryItems} more
         </div>
       )}
     </div>
