@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/chzzk/:path*",
+      "destination": "https://api.chzzk.naver.com/:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

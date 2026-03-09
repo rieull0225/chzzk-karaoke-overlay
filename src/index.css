@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+/* 기본 폰트 설정 */
+:root {
+  font-family: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 오버레이용 배경 - 브라우저 테스트용 검정, OBS에서는 투명 처리됨 */
+body.overlay-mode {
+  background: #000000 !important;
+}
+
+body.overlay-mode #root {
+  background: #000000 !important;
+}
+
+/* 관리자 페이지용 다크 테마 */
+body.control-mode {
+  background-color: #0f0f0f;
+  color: #e5e5e5;
+}
+
+/* 기본 body 스타일 */
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* 텍스트 그림자 유틸리티 - 오버레이 가독성용 */
+.text-shadow {
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.8),
+    0 2px 4px rgba(0, 0, 0, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.text-shadow-sm {
+  text-shadow:
+    0 0 2px rgba(0, 0, 0, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* 스크롤바 스타일 (관리자 페이지용) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #505050;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
