@@ -1,9 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+function createSupabaseClient(): SupabaseClient | null {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('Supabase credentials not found. Running in offline mode.');
+    return null;
+  }
+  return createClient(supabaseUrl, supabaseAnonKey);
+}
+
+export const supabase = createSupabaseClient();
 
 // 스트림 데이터 타입
 export interface StreamData {
@@ -20,6 +28,8 @@ export interface StreamData {
 
 // 스트림 데이터 가져오기
 export async function getStreamData(streamId: string): Promise<StreamData | null> {
+  if (!supabase) return null;
+
   const { data, error } = await supabase
     .from('streams')
     .select('*')
@@ -40,6 +50,8 @@ export async function getStreamData(streamId: string): Promise<StreamData | null
 
 // 스트림 데이터 저장/업데이트
 export async function saveStreamData(streamId: string, data: Partial<StreamData>): Promise<boolean> {
+  if (!supabase) return false;
+
   const { error } = await supabase
     .from('streams')
     .upsert({
@@ -58,6 +70,8 @@ export async function saveStreamData(streamId: string, data: Partial<StreamData>
 
 // 스트림 데이터 삭제
 export async function deleteStreamData(streamId: string): Promise<boolean> {
+  if (!supabase) return false;
+
   const { error } = await supabase
     .from('streams')
     .delete()
@@ -73,6 +87,10 @@ export async function deleteStreamData(streamId: string): Promise<boolean> {
 
 // 실시간 구독
 export function subscribeToStream(streamId: string, callback: (data: StreamData) => void) {
+  if (!supabase) {
+    return () => {}; // no-op unsubscribe
+  }
+
   const channel = supabase
     .channel(`stream-${streamId}`)
     .on(
