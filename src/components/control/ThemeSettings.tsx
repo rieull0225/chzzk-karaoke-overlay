@@ -65,7 +65,7 @@ export function ThemeSettings({ useStore }: ThemeSettingsProps) {
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">
-              히스토리: {theme.fontSize.history}px
+              플레이리스트: {theme.fontSize.history}px
             </label>
             <input
               type="range"
@@ -181,10 +181,10 @@ export function ThemeSettings({ useStore }: ThemeSettingsProps) {
           </div>
         </div>
 
-        {/* 히스토리 표시 개수 */}
+        {/* 플레이리스트 표시 개수 */}
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-gray-400">
-            히스토리 표시 개수: {layout.maxHistoryItems}개
+            플레이리스트 표시 개수: {layout.maxHistoryItems}개
           </h3>
           <input
             type="range"

@@ -19,7 +19,7 @@ export function VisibilityToggles({ useStore }: VisibilityTogglesProps) {
           onChange={(checked) => setVisibility({ currentSong: checked })}
         />
         <Toggle
-          label="히스토리 표시"
+          label="플레이리스트 표시"
           checked={visibility.history}
           onChange={(checked) => setVisibility({ history: checked })}
         />

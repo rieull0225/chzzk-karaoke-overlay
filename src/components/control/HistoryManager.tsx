@@ -40,14 +40,14 @@ export function HistoryManager({ useStore }: HistoryManagerProps) {
     <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-white">
-          히스토리 ({songHistory.length}곡)
+          플레이리스트 ({songHistory.length}곡)
         </h2>
         {songHistory.length > 0 && (
           <Button
             size="sm"
             variant="danger"
             onClick={() => {
-              if (confirm('히스토리를 모두 삭제하시겠습니까?')) {
+              if (confirm('플레이리스트를 모두 삭제하시겠습니까?')) {
                 clearHistory();
               }
             }}
