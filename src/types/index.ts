@@ -120,6 +120,16 @@ export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
+// 16자 랜덤 세션 ID 생성
+export function generateSessionId(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 16; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 export function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
   return date.toLocaleTimeString('ko-KR', {

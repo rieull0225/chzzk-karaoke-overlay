@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { generateSessionId } from '../types';
 
 interface ChannelInfo {
   channelId: string;
@@ -11,12 +12,41 @@ interface ChannelInfo {
   openLive: boolean;
 }
 
+// localStorage 키
+const SESSION_KEY = 'overlay_session';
+
+interface StoredSession {
+  sessionId: string;
+  channelName: string;
+  createdAt: number;
+}
+
 export function StreamIdInput() {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [channelInfo, setChannelInfo] = useState<ChannelInfo | null>(null);
+  const [existingSession, setExistingSession] = useState<StoredSession | null>(null);
   const navigate = useNavigate();
+
+  // 기존 세션 확인
+  useEffect(() => {
+    const stored = localStorage.getItem(SESSION_KEY);
+    if (stored) {
+      try {
+        const session: StoredSession = JSON.parse(stored);
+        // 2일(48시간) 이내인 경우만 유효
+        const twoDays = 48 * 60 * 60 * 1000;
+        if (Date.now() - session.createdAt < twoDays) {
+          setExistingSession(session);
+        } else {
+          localStorage.removeItem(SESSION_KEY);
+        }
+      } catch {
+        localStorage.removeItem(SESSION_KEY);
+      }
+    }
+  }, []);
 
   const extractStreamId = (input: string): string => {
     const trimmed = input.trim();
@@ -92,8 +122,27 @@ export function StreamIdInput() {
 
   const handleStart = () => {
     if (channelInfo) {
-      navigate(`/control?id=${channelInfo.channelId}`);
+      // 새 세션 ID 생성
+      const sessionId = generateSessionId();
+      const session: StoredSession = {
+        sessionId,
+        channelName: channelInfo.channelName,
+        createdAt: Date.now(),
+      };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      navigate(`/control?id=${sessionId}`);
     }
+  };
+
+  const handleContinueSession = () => {
+    if (existingSession) {
+      navigate(`/control?id=${existingSession.sessionId}`);
+    }
+  };
+
+  const handleNewSession = () => {
+    localStorage.removeItem(SESSION_KEY);
+    setExistingSession(null);
   };
 
   return (
@@ -101,6 +150,22 @@ export function StreamIdInput() {
       <div className="max-w-md w-full">
         <h1 className="text-3xl font-bold mb-2 text-center">Live Overlay</h1>
         <p className="text-gray-400 text-center mb-8">치지직 채널을 검색하세요</p>
+
+        {/* 기존 세션이 있으면 표시 */}
+        {existingSession && (
+          <div className="mb-6 p-4 bg-gray-900 rounded-xl border border-gray-800">
+            <p className="text-sm text-gray-400 mb-2">이전 세션이 있습니다</p>
+            <p className="text-lg font-semibold text-amber-400 mb-3">{existingSession.channelName}</p>
+            <div className="flex gap-2">
+              <Button onClick={handleContinueSession} className="flex-1">
+                이어서 사용하기
+              </Button>
+              <Button onClick={handleNewSession} variant="secondary" className="flex-1">
+                새로 시작
+              </Button>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSearch} className="space-y-4">
           <Input

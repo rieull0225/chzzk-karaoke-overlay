@@ -15,7 +15,7 @@ export const supabase = createSupabaseClient();
 
 // 스트림 데이터 타입
 export interface StreamData {
-  id: string; // stream_id
+  id: string; // session_id (16자 랜덤)
   current_song: unknown;
   song_history: unknown[];
   request_songs: unknown[];
@@ -23,6 +23,7 @@ export interface StreamData {
   visibility: unknown;
   theme: unknown;
   layout: unknown;
+  created_at: string;
   updated_at: string;
 }
 
@@ -49,16 +50,24 @@ export async function getStreamData(streamId: string): Promise<StreamData | null
 }
 
 // 스트림 데이터 저장/업데이트
-export async function saveStreamData(streamId: string, data: Partial<StreamData>): Promise<boolean> {
+export async function saveStreamData(streamId: string, data: Partial<StreamData>, isNew = false): Promise<boolean> {
   if (!supabase) return false;
+
+  const now = new Date().toISOString();
+  const upsertData: Record<string, unknown> = {
+    id: streamId,
+    ...data,
+    updated_at: now,
+  };
+
+  // 새 레코드인 경우 created_at 설정
+  if (isNew) {
+    upsertData.created_at = now;
+  }
 
   const { error } = await supabase
     .from('streams')
-    .upsert({
-      id: streamId,
-      ...data,
-      updated_at: new Date().toISOString(),
-    });
+    .upsert(upsertData);
 
   if (error) {
     console.error('Error saving stream data:', error);
@@ -66,6 +75,22 @@ export async function saveStreamData(streamId: string, data: Partial<StreamData>
   }
 
   return true;
+}
+
+// 오래된 데이터 삭제 (2일 이상 된 데이터)
+export async function cleanupOldStreams(): Promise<void> {
+  if (!supabase) return;
+
+  const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+
+  const { error } = await supabase
+    .from('streams')
+    .delete()
+    .lt('created_at', twoDaysAgo);
+
+  if (error) {
+    console.error('Error cleaning up old streams:', error);
+  }
 }
 
 // 스트림 데이터 삭제
