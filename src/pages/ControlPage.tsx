@@ -123,12 +123,12 @@ function UrlRow({ label, url }: { label: string; url: string }) {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="w-24 text-gray-500 shrink-0">{label}:</span>
-      <code className="text-amber-400 text-xs break-all flex-1">{url}</code>
+    <div className="flex items-start gap-1">
+      <span className="text-gray-500">{label}:</span>
+      <code className="text-amber-400 text-xs break-all">{url}</code>
       <button
         onClick={handleCopy}
-        className="shrink-0 px-2 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-colors"
+        className="ml-1 px-1.5 py-0.5 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-colors"
       >
         {copied ? '복사됨!' : '복사'}
       </button>
