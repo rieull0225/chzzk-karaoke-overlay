@@ -83,16 +83,31 @@ function ControlPageContent({ streamId, useStore }: ControlPageContentProps) {
         </div>
       </main>
 
-      {/* 푸터 */}
+      {/* 푸터 - 오버레이 URL */}
       <footer className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-          <div>
-            OBS Browser Source URL:{' '}
-            <code className="text-amber-400">
-              {typeof window !== 'undefined' ? `${window.location.origin}/overlay?id=${streamId}` : `/overlay?id=${streamId}`}
-            </code>
+        <div className="text-sm text-gray-500 space-y-3">
+          <p className="text-gray-400 font-medium">OBS Browser Source URLs:</p>
+          <div className="grid gap-2">
+            <div className="flex items-center gap-2">
+              <span className="w-24 text-gray-500">전체:</span>
+              <code className="text-amber-400 text-xs break-all">
+                {typeof window !== 'undefined' ? `${window.location.origin}/overlay?id=${streamId}` : `/overlay?id=${streamId}`}
+              </code>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-24 text-gray-500">Now Playing:</span>
+              <code className="text-amber-400 text-xs break-all">
+                {typeof window !== 'undefined' ? `${window.location.origin}/overlay/now-playing?id=${streamId}` : `/overlay/now-playing?id=${streamId}`}
+              </code>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-24 text-gray-500">Playlist:</span>
+              <code className="text-amber-400 text-xs break-all">
+                {typeof window !== 'undefined' ? `${window.location.origin}/overlay/playlist?id=${streamId}` : `/overlay/playlist?id=${streamId}`}
+              </code>
+            </div>
           </div>
-          <div>변경사항은 자동으로 동기화됩니다</div>
+          <p className="text-gray-600 mt-2">변경사항은 자동으로 동기화됩니다</p>
         </div>
       </footer>
     </div>
