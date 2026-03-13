@@ -2,6 +2,7 @@ import { useBodyClass } from '../hooks/useBroadcastSync';
 import { useStreamId } from '../hooks/useStreamId';
 import { getAppStore } from '../store/useAppStore';
 import { HistoryList } from '../components/overlay/HistoryList';
+import type { OverlayTheme, OverlayLayout } from '../types';
 
 export function PlaylistOverlay() {
   const streamId = useStreamId();
@@ -26,20 +27,40 @@ function PlaylistContent({ streamId }: { streamId: string }) {
     return null;
   }
 
-  const positionClasses = {
-    'top-left': 'top-0 left-0',
-    'top-right': 'top-0 right-0',
-    'bottom-left': 'bottom-0 left-0',
-    'bottom-right': 'bottom-0 right-0',
-    custom: 'top-0 left-0',
-  };
-
   return (
-    <div
-      className={`fixed ${positionClasses[layout.position]}`}
-      style={{ padding: layout.padding }}
-    >
-      <HistoryList songs={songHistory} theme={theme} layout={layout} />
+    <div style={getContainerStyle(layout)}>
+      <div style={getPanelStyle(theme)}>
+        <HistoryList songs={songHistory} theme={theme} layout={layout} />
+      </div>
     </div>
   );
+}
+
+function getContainerStyle(layout: OverlayLayout): React.CSSProperties {
+  const positionStyles: Record<string, React.CSSProperties> = {
+    'top-left': { top: layout.padding, left: layout.padding },
+    'top-right': { top: layout.padding, right: layout.padding },
+    'bottom-left': { bottom: layout.padding, left: layout.padding },
+    'bottom-right': { bottom: layout.padding, right: layout.padding },
+    custom: { bottom: layout.padding, left: layout.padding },
+  };
+
+  return {
+    position: 'fixed',
+    ...positionStyles[layout.position],
+    maxWidth: '90vw',
+    zIndex: 9999,
+  };
+}
+
+function getPanelStyle(theme: OverlayTheme): React.CSSProperties {
+  if (!theme.showPanel) return {};
+
+  return {
+    backgroundColor: `${theme.backgroundColor}${Math.round(theme.backgroundOpacity * 255)
+      .toString(16)
+      .padStart(2, '0')}`,
+    borderRadius: `${theme.borderRadius}px`,
+    padding: '16px 24px',
+  };
 }
