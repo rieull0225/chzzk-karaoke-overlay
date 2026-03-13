@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useBodyClass } from '../hooks/useBroadcastSync';
 import { useStreamId } from '../hooks/useStreamId';
@@ -88,28 +89,49 @@ function ControlPageContent({ streamId, useStore }: ControlPageContentProps) {
         <div className="text-sm text-gray-500 space-y-3">
           <p className="text-gray-400 font-medium">OBS Browser Source URLs:</p>
           <div className="grid gap-2">
-            <div className="flex items-center gap-2">
-              <span className="w-24 text-gray-500">전체:</span>
-              <code className="text-amber-400 text-xs break-all">
-                {typeof window !== 'undefined' ? `${window.location.origin}/overlay?id=${streamId}` : `/overlay?id=${streamId}`}
-              </code>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-24 text-gray-500">Now Playing:</span>
-              <code className="text-amber-400 text-xs break-all">
-                {typeof window !== 'undefined' ? `${window.location.origin}/overlay/now-playing?id=${streamId}` : `/overlay/now-playing?id=${streamId}`}
-              </code>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-24 text-gray-500">Playlist:</span>
-              <code className="text-amber-400 text-xs break-all">
-                {typeof window !== 'undefined' ? `${window.location.origin}/overlay/playlist?id=${streamId}` : `/overlay/playlist?id=${streamId}`}
-              </code>
-            </div>
+            <UrlRow
+              label="전체"
+              url={typeof window !== 'undefined' ? `${window.location.origin}/overlay?id=${streamId}` : `/overlay?id=${streamId}`}
+            />
+            <UrlRow
+              label="Now Playing"
+              url={typeof window !== 'undefined' ? `${window.location.origin}/overlay/now-playing?id=${streamId}` : `/overlay/now-playing?id=${streamId}`}
+            />
+            <UrlRow
+              label="Playlist"
+              url={typeof window !== 'undefined' ? `${window.location.origin}/overlay/playlist?id=${streamId}` : `/overlay/playlist?id=${streamId}`}
+            />
           </div>
           <p className="text-gray-600 mt-2">변경사항은 자동으로 동기화됩니다</p>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function UrlRow({ label, url }: { label: string; url: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-24 text-gray-500 shrink-0">{label}:</span>
+      <code className="text-amber-400 text-xs break-all flex-1">{url}</code>
+      <button
+        onClick={handleCopy}
+        className="shrink-0 px-2 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-colors"
+      >
+        {copied ? '복사됨!' : '복사'}
+      </button>
     </div>
   );
 }
