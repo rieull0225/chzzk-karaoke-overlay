@@ -34,21 +34,19 @@ export function HistoryList({ songs, theme, layout }: HistoryListProps) {
 
       {/* 곡 목록 */}
       <ul className="space-y-1">
-        {displaySongs.map((song, index) => (
+        {displaySongs.map((song) => (
           <li
             key={song.id}
-            className="text-shadow-sm animate-slideIn"
+            className="text-shadow-sm"
             style={{
               color: theme.textColor,
               fontSize: `${theme.fontSize.history}px`,
               fontFamily: theme.fontFamily,
-              opacity: 1 - index * 0.15, // 아래로 갈수록 희미해짐
-              animationDelay: `${index * 50}ms`,
             }}
           >
             <span>{song.title}</span>
             {song.artist && (
-              <span className="opacity-50"> - {song.artist}</span>
+              <span className="opacity-70"> - {song.artist}</span>
             )}
           </li>
         ))}
