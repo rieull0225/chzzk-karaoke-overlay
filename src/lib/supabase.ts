@@ -110,29 +110,31 @@ export async function deleteStreamData(streamId: string): Promise<boolean> {
   return true;
 }
 
-// 폴링 기반 실시간 동기화 (2초마다)
+// Supabase Realtime 구독
 export function subscribeToStream(streamId: string, callback: (data: StreamData) => void) {
   if (!supabase) {
     return () => {};
   }
 
-  let lastUpdatedAt: string | null = null;
-
-  const poll = async () => {
-    const data = await getStreamData(streamId);
-    if (data && data.updated_at !== lastUpdatedAt) {
-      lastUpdatedAt = data.updated_at;
-      callback(data);
-    }
-  };
-
-  // 2초마다 폴링
-  const interval = setInterval(poll, 2000);
-
-  // 즉시 한 번 실행
-  poll();
+  const channel = supabase
+    .channel(`stream-${streamId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'streams',
+        filter: `id=eq.${streamId}`,
+      },
+      (payload) => {
+        if (payload.new) {
+          callback(payload.new as StreamData);
+        }
+      }
+    )
+    .subscribe();
 
   return () => {
-    clearInterval(interval);
+    supabase.removeChannel(channel);
   };
 }
