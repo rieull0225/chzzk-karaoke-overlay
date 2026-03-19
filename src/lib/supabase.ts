@@ -110,26 +110,18 @@ export async function deleteStreamData(streamId: string): Promise<boolean> {
   return true;
 }
 
-// 폴링 기반 실시간 동기화 (2초마다)
+// 초기 데이터 로드만 (폴링 없음)
 export function subscribeToStream(streamId: string, callback: (data: StreamData) => void) {
   if (!supabase) {
     return () => {};
   }
 
-  let lastUpdatedAt: string | null = null;
-
-  const poll = async () => {
-    const data = await getStreamData(streamId);
-    if (data && data.updated_at !== lastUpdatedAt) {
-      lastUpdatedAt = data.updated_at;
+  // 초기 로드만 수행
+  getStreamData(streamId).then((data) => {
+    if (data) {
       callback(data);
     }
-  };
+  });
 
-  const interval = setInterval(poll, 2000);
-  poll();
-
-  return () => {
-    clearInterval(interval);
-  };
+  return () => {};
 }
